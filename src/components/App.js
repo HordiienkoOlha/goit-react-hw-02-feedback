@@ -4,31 +4,53 @@ import Section from './Section';
 import Statistics from './Statistics';
 // import Notification from './Notification';
 import FeedbackOptions from './FeedbackOptions';
-// import s from 'components/FeedbackList/FeedbackList.module.css';
+import data from './data/data.json';
 
 class App extends Component {
+static defaultProps = {
+    goodInitialValue: 0,
+    neutralInitialValue: 0,
+    badVInitialValue: 0,
+    TotalInitial: 0,
+    PositivePercentageInit: 0,
+  };
+  static propTypes = {
+    //
+  };
   state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
-    visible: false,
+    good: this.props.goodInitialValue,
+    neutral: this.props.neutralInitialValue,
+    bad: this.props.badVInitialValue,
+    // total: this.props.TotalInitial,
+    // positivePercentage: this.props.PositivePercentageInit,
+  };
+  leaveFeedback = option => {
+    console.log(option);
+    this.setState(prevState => ({
+      good: prevState.good + 1,
+    }));
+    // this.countTotalFeedback();
+};
   };
 
   render() {
-    const { good, neutral, bad, total, positivePercentage } = this.state;
+    const { good, neutral, bad } = this.state;
     return (
       <>
         <Section title={'Please leave feedback'}>
-          <FeedbackOptions />
-          {/* <FeedbackOptions options={visible} />/ */}
+          {/* <FeedbackOptions /> */}
+          <FeedbackOptions
+            options={data}
+            onLeaveFeedback={this.leaveFeedback}
+          />
         </Section>
         <Section title={'Statistics'}>
           <Statistics
             good={good}
             neutral={neutral}
             bad={bad}
-            total={total}
-            positivePercentage={positivePercentage}
+            // total={total}
+            // positivePercentage={positivePercentage}
           ></Statistics>
           {/* ) : (<Notification message="There is no feedback"></Notification>
           )} */}
@@ -40,4 +62,3 @@ class App extends Component {
 export default App;
 
 // onLeaveFeedback={this.countPositiveFeedbackPercentage}
-// <FeedbackOptions options={visible} onLeaveFeedback={}/>
