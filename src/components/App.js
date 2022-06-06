@@ -1,106 +1,64 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import Section from './Section';
-
 import Statistics from './Statistics';
 import Notification from './Notification';
 import FeedbackOptions from './FeedbackOptions';
 
 class App extends Component {
-  static defaultProps = {
-    goodInitialValue: 0,
-    neutralInitialValue: 0,
-    badVInitialValue: 0,
-    TotalInitial: 0,
-    PositivePercentageInit: 100,
-  };
-  static propTypes = {
-    // goodInitialValue: PropTypes.number.isRequired,
-    // neutralInitialValue: PropTypes.number.isRequired,
-    // badVInitialValue: PropTypes.number.isRequired,
-    // TotalInitial: PropTypes.number.isRequired,
-    // PositivePercentageInit: PropTypes.number.isRequired,
-  };
   state = {
-    good: this.props.goodInitialValue,
-    neutral: this.props.neutralInitialValue,
-    bad: this.props.badVInitialValue,
-    total: this.props.TotalInitial,
-    positivePercentage: this.props.PositivePercentageInit,
-    visible: false,
+    good: 0,
+    neutral: 0,
+    bad: 0,
   };
-  HandleGood = () => {
-    console.log('good');
-
-    this.setState({ visible: true });
-    this.setState(prevState => ({
-      good: prevState.good + 1,
-    }));
-    this.countTotalFeedback();
-    this.countPositiveFeedbackPercentage();
-  };
-  HandleNeutral = () => {
-    console.log('neutral');
-    this.setState({ visible: true });
-    this.setState(prevState => ({
-      neutral: prevState.neutral + 1,
-    }));
-    this.countTotalFeedback();
-        this.countPositiveFeedbackPercentage();
-  };
-  HandleBad = () => {
-    console.log('bad');
-    this.setState({ visible: true });
-    this.setState(prevState => ({
-      bad: prevState.bad + 1,
-    }));
-    this.countTotalFeedback();
-        this.countPositiveFeedbackPercentage();
-  };
-  countTotalFeedback = () => {
-    this.setState(prevState => ({
-      total: prevState.total + 1,
+  LeaveFeedback = e => {
+    const stateKey = e.target.name;
+    this.setState(itemState => ({
+      [stateKey]: itemState[stateKey] + 1,
     }));
   };
+  countTotalFeedback() {
+    return Object.values(this.state).reduce((acc, item) => acc + item, 0);
+    // this.setState(
+    //   prevState => prevState.good + prevState.neutral + prevState.bad
+    // );
+  }
+  // countPositiveFeedbackPercentage = () => {
+  //   return this.setState( positivePercentage: Math.round((good * 100) / total) });
+  // };
   countPositiveFeedbackPercentage = () => {
-    const { good, total } = this.state;
-        console.log(good);
-    console.log(good === 0);
-    console.log(good === 1);
-    console.log(good === total);
-    // if (good === total) {
-    //   this.setState({
-    //     positivePercentage: this.props.PositivePercentageInit,
-    //   });
-    // }
-    this.setState({
-      positivePercentage: Math.round((good * 100) / total),
-    });
+    const { good } = this.state;
+    return good >= 1
+      ? ((good / this.countTotalFeedback()) * 100).toFixed(0)
+      : 0;
   };
-
   render() {
-    const { good, neutral, bad, total, positivePercentage, visible } = this.state;
+    const { good, neutral, bad } = this.state;
+    const {
+      LeaveFeedback,
+      countTotalFeedback,
+      countPositiveFeedbackPercentage,
+    } = this;
     return (
       <>
         <Section title={'Please leave feedback'}>
-          {/* <FeedbackOptions /> */}
-
           <FeedbackOptions
-            onGood={this.HandleGood}
-            onNeutral={this.HandleNeutral}
-            onBad={this.HandleBad}
+            options={Object.keys(this.state)}
+            onLeaveFeedback={LeaveFeedback}
           />
         </Section>
-        <Section title={'Statistics'}>
-          { visible ? <Statistics
-            good={good}
-            neutral={neutral}
-            bad={bad}
-            total={total}
-            positivePercentage={positivePercentage}
-          ></Statistics>
-           : (<Notification message="There is no feedback"></Notification>
-          )} 
-        </Section>
+        {countTotalFeedback() !== 0 ? (
+          <Section title={'Statistics'}>
+            <Statistics
+              good={good}
+              neutral={neutral}
+              bad={bad}
+              total={countTotalFeedback()}
+              positivePercentage={countPositiveFeedbackPercentage()}
+            />
+          </Section>
+        ) : (
+          <Notification message="There is no feedback" />
+        )}
       </>
     );
   }
@@ -111,32 +69,51 @@ export default App;
 //   options={InitialData}
 //   onLeaveFeedback={this.leaveFeedback}
 // />
-//   // HandleBad = () => {
-//   //   console.log('bad');
-//   //   this.setState({ visible: true });
-//   //   this.setState(prevState => ({
-//   //     bad: prevState.bad + 1,
-//   //   }));
-//   //   this.countTotalFeedback();
-//   // };
-// onLeaveFeedback={this.countPositiveFeedbackPercentage}
+// /  HandleGood = () => {
+//     console.log('good');
 
-//   // countTotalFeedback = () => {
-//   //   this.setState(prevState => ({
-//   //     total: prevState.total + 1,
-//   //   }));
-//   // };
-//   //   countPositiveFeedbackPercentage = () => {
-//   //     const { good, total } = this.state;
-//   //     console.log(good === 0);
-//   //     console.log(good === 1);
-//   //     console.log(good === total);
-//   //     if (good === total) {
-//   //       this.setState({
-//   //         positivePercentage: this.props.PositivePercentageInit,
-//   //       });
-//   //     }
-//   //     this.setState({
-//   //       positivePercentage: Math.round((good * 100) / total),
-//   //     });
-//   //   };
+//     this.setState({ visible: true });
+//     this.setState(prevState => ({
+//       good: prevState.good + 1,
+//     }));
+//     this.countTotalFeedback();
+//     this.countPositiveFeedbackPercentage();
+//   };
+//   HandleNeutral = () => {
+//     console.log('neutral');
+//     this.setState({ visible: true });
+//     this.setState(prevState => ({
+//       neutral: prevState.neutral + 1,
+//     }));
+//     this.countTotalFeedback();
+//     this.countPositiveFeedbackPercentage();
+//   };
+//   HandleBad = () => {
+//     console.log('bad');
+//     this.setState({ visible: true });
+//     this.setState(prevState => ({
+//       bad: prevState.bad + 1,
+//     }));
+//     this.countTotalFeedback();
+//     this.countPositiveFeedbackPercentage();
+//   };
+//   countTotalFeedback = () => {
+//     this.setState(prevState => ({
+//       total: prevState.total + 1,
+//     }));
+//   };
+//   countPositiveFeedbackPercentage = () => {
+//     const { good, total } = this.state;
+//     console.log(good);
+//     console.log(good === 0);
+//     console.log(good === 1);
+//     console.log(good === total);
+//     // if (good === total) {
+//     //   this.setState({
+//     //     positivePercentage: this.props.PositivePercentageInit,
+//     //   });
+//     // }
+//     this.setState({
+//       positivePercentage: Math.round((good * 100) / total),
+//     });
+//   };
